@@ -1,1 +1,3 @@
 .env
+python/Streamlit/LangChainData/docs/*
+python/Streamlit/LangChainData/__pycache__/*
