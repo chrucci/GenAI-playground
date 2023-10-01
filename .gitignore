@@ -1,3 +1,4 @@
 .env
 python/Streamlit/LangChainData/docs/*
 python/Streamlit/LangChainData/__pycache__/*
+jupyter/PaLM Pair Programming/.ipynb_checkpoints/*
