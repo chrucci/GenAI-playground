@@ -2,3 +2,4 @@
 python/Streamlit/LangChainData/docs/*
 **/__pycache__/*
 **/.ipynb_checkpoints/*
+jupyter/LangChainData/docs/*

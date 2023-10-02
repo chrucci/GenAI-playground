@@ -8,7 +8,7 @@ class QuestionAnswerer:
     don't try to make up an answer. 
     Keep the answer as concise as possible. 
     If you can, please cite from which page or section your answers were derived.  
-    Also, please site the file name of the PDF.
+    Also, please site the source of the PDF.
     If you don't know, that's ok.  
     You can just say your don't know which page or section the material came from.  
     But please don't make up an answer.  
