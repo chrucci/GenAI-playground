@@ -1,13 +1,13 @@
 from loader import PdfLoader
 from ask import QuestionAnswerer
 
+
 class PdfQuestionController:
-    
-    #constructor
+    # constructor
     def __init__(self, save_folder):
         self.save_folder = save_folder
-    
-    #get answerer
+
+    # get answerer
     def get_answerer(self, file_name):
         path = f"{self.save_folder}{file_name}"
         print(f"loading from {path}")

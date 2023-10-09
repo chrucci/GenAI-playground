@@ -7,15 +7,14 @@ from langchain.embeddings.openai import OpenAIEmbeddings
 import streamlit as st
 
 
-
 class PdfLoader:
-    persist_directory = './docs/chroma/'
+    persist_directory = "./docs/chroma/"
 
     def __init__(self) -> None:
         self.embedding = OpenAIEmbeddings()
         self.vectordb = Chroma(
             persist_directory=PdfLoader.persist_directory,
-            embedding_function=self.embedding
+            embedding_function=self.embedding,
         )
 
     def load_pdf(self, file_path):
@@ -23,9 +22,11 @@ class PdfLoader:
         loader = PyPDFLoader(file_path)
         docs = loader.load()
         return docs
-    
+
     def split_doc(self, docs):
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size = 1500,chunk_overlap = 150)
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=1500, chunk_overlap=150
+        )
         splits = text_splitter.split_documents(docs)
         return splits
 
@@ -33,11 +34,11 @@ class PdfLoader:
         vectordb = Chroma.from_documents(
             documents=splits,
             embedding=self.embedding,
-            persist_directory=PdfLoader.persist_directory
+            persist_directory=PdfLoader.persist_directory,
         )
         vectordb.persist()
         return vectordb
-    
+
     def get_db(self):
         return self.vectordb
 
@@ -45,11 +46,10 @@ class PdfLoader:
     def load(_self, file_path):
         doc = _self.load_pdf(file_path)
         splits = _self.split_doc(doc)
-        return _self.add_to_db(splits) 
+        return _self.add_to_db(splits)
 
-    
 
-#Load
+# Load
 # pdf_file_name="test.pdf"
 
 # pdf_length = len(docs)
