@@ -4,3 +4,14 @@ python/Streamlit/LangChainData/docs/*
 **/.ipynb_checkpoints/*
 jupyter/LangChainData/docs/*
 jupyter/OpenAIAssistantAPI/CT_Drivers_Manual.pdf:Zone.Identifier
+jupyter/LlamaIndexRag/default.sqlite
+jupyter/LlamaIndexRag/merging_index/default__vector_store.json
+jupyter/LlamaIndexRag/merging_index/docstore.json
+jupyter/LlamaIndexRag/merging_index/graph_store.json
+jupyter/LlamaIndexRag/merging_index/image__vector_store.json
+jupyter/LlamaIndexRag/merging_index/index_store.json
+jupyter/LlamaIndexRag/sentence_index/default__vector_store.json
+jupyter/LlamaIndexRag/sentence_index/docstore.json
+jupyter/LlamaIndexRag/sentence_index/graph_store.json
+jupyter/LlamaIndexRag/sentence_index/image__vector_store.json
+jupyter/LlamaIndexRag/sentence_index/index_store.json
