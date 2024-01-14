@@ -15,4 +15,3 @@ jupyter/LlamaIndexRag/sentence_index/docstore.json
 jupyter/LlamaIndexRag/sentence_index/graph_store.json
 jupyter/LlamaIndexRag/sentence_index/image__vector_store.json
 jupyter/LlamaIndexRag/sentence_index/index_store.json
-jupyter/LlamaIndexRag/default.sqlite
