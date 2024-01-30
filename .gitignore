@@ -9,3 +9,4 @@ jupyter/LlamaIndexRag/merging_index/*
 jupyter/LlamaIndexRag/sentence_index/*
 jupyter/OpenAIVision/deborahlynndesigns-decoratingdeninteriors.WordPress.2024-01-14.xml
 jupyter/OpenAIVision/sentence_index/*
+*.log
