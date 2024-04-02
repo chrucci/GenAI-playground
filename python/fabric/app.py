@@ -133,6 +133,8 @@ selected_pattern = st.selectbox(
         "summarize_pull-requests",
         "summarize_rpg_session",
         "write_essay",
+        "write_micro_essay",
+        "write_pull-request",
         "write_semgrep_rule",
     ),
 )
