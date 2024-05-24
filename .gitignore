@@ -12,3 +12,10 @@ jupyter/OpenAIVision/sentence_index/*
 *.log
 jupyter/CrewAI/marketing_report.md
 jupyter/CrewAI/venue_details.json
+jupyter/CrewAI/interview_materials.md
+jupyter/CrewAI/tailored_resume.md
+jupyter/CrewAI/db/chroma.sqlite3
+jupyter/CrewAI/db/96b7e975-07f2-48b7-a888-5edebaf2c55b/data_level0.bin
+jupyter/CrewAI/db/96b7e975-07f2-48b7-a888-5edebaf2c55b/header.bin
+jupyter/CrewAI/db/96b7e975-07f2-48b7-a888-5edebaf2c55b/length.bin
+jupyter/CrewAI/db/96b7e975-07f2-48b7-a888-5edebaf2c55b/link_lists.bin
