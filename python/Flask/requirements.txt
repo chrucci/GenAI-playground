@@ -1,7 +1,7 @@
-blinker @ file:///croot/blinker_1696539051175/work
-click @ file:///croot/click_1698129812380/work
-Flask @ file:///croot/flask_1716545870149/work
-itsdangerous @ file:///croot/itsdangerous_1716533337253/work
-Jinja2 @ file:///croot/jinja2_1716993405101/work
-MarkupSafe @ file:///croot/markupsafe_1704205993651/work
-Werkzeug @ file:///croot/werkzeug_1716533313107/work
+blinker==1.8.2
+click==8.1.7
+Flask==3.0.3
+itsdangerous==2.2.0
+Jinja2==3.1.4
+MarkupSafe==2.1.5
+Werkzeug==3.0.3

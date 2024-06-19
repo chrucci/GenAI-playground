@@ -1,0 +1,20 @@
+from flask import Flask, render_template, jsonify
+
+app = Flask(__name__)
+
+
+@app.route("/hello/<name>")
+def hello_name(name):
+    list = ["foo", "bar", "baz"]
+    return render_template("hello.html", name=name, items=list)
+
+
+@app.route("/update-items", methods=["GET"])
+def update_items():
+    # New list of items
+    new_items = ["apple", "orange", "banana"]
+    return jsonify(new_items)
+
+
+if __name__ == "__main__":
+    app.run(debug=True)

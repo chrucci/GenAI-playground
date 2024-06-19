@@ -1,5 +1,5 @@
 import unittest
-from app import app
+from app.app import app
 
 
 class FlaskAppTests(unittest.TestCase):
@@ -14,7 +14,6 @@ class FlaskAppTests(unittest.TestCase):
         response = self.client.get(f"/hello/{name}")
         self.assertEqual(response.status_code, 200)
         self.assertIn(bytearray(f"Hello, {name}!", "utf-8"), response.data)
-        self.assertIn(bytearray("foobar", "utf-8"), response.data)
 
     def test_bad_route(self):
         # Test the /bad route with a sample name

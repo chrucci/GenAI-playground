@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hello Page</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <h1>Hello, {{ name }}! Welcome to the world of Flask.</h1>
+    <label for="items">Choose an item:</label>
+    <select name="items" id="items">
+        {% for item in items %}
+            <option value="{{ item }}">{{ item }}</option>
+        {% endfor %}
+    </select>
+    <button type="button" id="updateButton">Update List</button>
+
+    <script>
+        $(document).ready(function(){
+            $("#updateButton").click(function(){
+                $.getJSON("/update-items", function(data){
+                    var items = $("#items");
+                    items.empty(); // Clear the current items
+                    $.each(data, function(index, item){
+                        items.append($("<option></option>").val(item).text(item));
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
