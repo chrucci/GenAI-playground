@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 from ref import get_llm_list
 
 app = Flask(__name__)
@@ -13,6 +13,14 @@ def home():
 def hello_name(name):
     list = ["foo", "bar", "baz"]
     return render_template("hello.html", name=name, items=list)
+
+
+@app.route("/submit-prompt", methods=["POST"])
+def ajax_call():
+    data = request.form.get("message")
+    # Process the data and generate a response
+    # response = process_data(data)
+    return "THIS IS what you sent: " + data
 
 
 @app.route("/update-items", methods=["GET"])
