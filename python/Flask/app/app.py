@@ -3,6 +3,11 @@ from flask import Flask, render_template, jsonify
 app = Flask(__name__)
 
 
+@app.route("/")
+def home():
+    return render_template("home.html")
+
+
 @app.route("/hello/<name>")
 def hello_name(name):
     list = ["foo", "bar", "baz"]
