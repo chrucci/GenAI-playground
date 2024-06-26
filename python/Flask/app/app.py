@@ -1,4 +1,5 @@
 from flask import Flask, render_template, jsonify
+from ref import get_llm_list
 
 app = Flask(__name__)
 
@@ -17,7 +18,8 @@ def hello_name(name):
 @app.route("/update-items", methods=["GET"])
 def update_items():
     # New list of items
-    new_items = ["apple", "orange", "banana"]
+    # new_items = ["apple", "orange", "banana"]
+    new_items = get_llm_list()
     return jsonify(new_items)
 
 
