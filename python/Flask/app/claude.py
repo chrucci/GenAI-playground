@@ -6,12 +6,30 @@ from flask import (
     session,
 )
 from litellm import completion
+from langfuse import Langfuse
 import os
 from datetime import timedelta
+import uuid
+import sys
+
+sys.path.append("../..")
+
+from dotenv import load_dotenv, find_dotenv
+
+_ = load_dotenv(find_dotenv())  # read local .env file
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)  # Set a secret key for sessions
 app.permanent_session_lifetime = timedelta(days=5)  # Set session lifetime
+
+# Initialize Langfuse
+langfuse = Langfuse(
+    public_key=os.getenv("LANGFUSE_PUBLIC_KEY"),
+    secret_key=os.getenv("LANGFUSE_SECRET_KEY"),
+    host=os.getenv(
+        "LANGFUSE_HOST", "https://cloud.langfuse.com"
+    ),  # Optional, use "https://cloud.langfuse.com" for Langfuse Cloud
+)
 
 # List of available LLMs
 LLMS = [
@@ -35,6 +53,7 @@ LLMS = [
 def index():
     if "conversation" not in session:
         session["conversation"] = []
+        session["trace_id"] = str(uuid.uuid4())
 
     if request.method == "POST":
         selected_llm = request.form["llm"]
@@ -43,14 +62,44 @@ def index():
         session["conversation"].append({"role": "user", "content": prompt})
 
         try:
+            # Create or continue the trace
+            trace = langfuse.trace(
+                id=session["trace_id"], metadata={"model": selected_llm}
+            )
+
+            # Log the user input as an event
+            trace.event(name="user_input", input=prompt)
+
+            # Make the LLM call and log it with Langfuse
+            generation = trace.generation(
+                name="llm_call",
+                model=selected_llm,
+                model_parameters={"temperature": 0.7},
+                input=session["conversation"],
+                is_streamed=False,
+            )
+
             response = completion(model=selected_llm, messages=session["conversation"])
             response_content = response["choices"][0]["message"]["content"]
+
+            # Update the Langfuse generation with the response
+            generation.end(
+                output=response_content,
+                completion_tokens=response["usage"]["completion_tokens"],
+                prompt_tokens=response["usage"]["prompt_tokens"],
+                total_tokens=response["usage"]["total_tokens"],
+            )
+
             session["conversation"].append(
                 {"role": "assistant", "content": response_content}
             )
             session.modified = True
+
             return jsonify({"status": "success", "response": response_content})
         except Exception as e:
+            # Log the error with Langfuse
+            trace = langfuse.trace(id=session["trace_id"])
+            trace.event(level="ERROR", name="llm_error", input=str(e))
             return jsonify({"status": "error", "message": str(e)})
 
     return render_template(
@@ -61,7 +110,18 @@ def index():
 @app.route("/reset", methods=["POST"])
 def reset():
     session["conversation"] = []
+    session["trace_id"] = str(uuid.uuid4())
     return "", 204
+
+
+@app.route("/rate", methods=["POST"])
+def rate():
+    rating = request.json.get("rating")
+    if rating is not None:
+        trace = langfuse.trace(id=session["trace_id"])
+        trace.score(name="user_rating", value=rating)
+        return jsonify({"status": "success"})
+    return jsonify({"status": "error", "message": "Invalid rating"}), 400
 
 
 if __name__ == "__main__":

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LiteLLM Interface with Memory</title>
+    <title>LiteLLM Interface with Memory and LangFuse</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
@@ -13,10 +13,12 @@
         .human { font-weight: bold; }
         .ai { font-weight: bold; color: #4a4a4a; }
         #reset { background-color: #f44336; color: white; border: none; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; }
+        .rating { margin-top: 10px; }
+        .rating button { width: auto; margin-right: 5px; }
     </style>
 </head>
 <body>
-    <h1>LiteLLM Interface with Memory</h1>
+    <h1>LiteLLM Interface with Memory and LangFuse</h1>
     <div id="conversation">
         {% for message in conversation %}
             {% if message.role == 'user' %}
@@ -38,6 +40,14 @@
         <button type="submit">Submit</button>
     </form>
     <button id="reset">Reset Conversation</button>
+    <div class="rating">
+        <span>Rate the conversation:</span>
+        <button class="rate-btn" data-rating="1">1</button>
+        <button class="rate-btn" data-rating="2">2</button>
+        <button class="rate-btn" data-rating="3">3</button>
+        <button class="rate-btn" data-rating="4">4</button>
+        <button class="rate-btn" data-rating="5">5</button>
+    </div>
 
     <script>
         $(document).ready(function() {
@@ -70,14 +80,33 @@
                     },
                     error: function() {
                         $('#conversation').append('<span class="ai">Error: Unable to get response from server.</span>\n\n');
-                        scrollToBottom();
-                    }
+                        scrollToBottom();                    }
                 });
             });
 
             $('#reset').on('click', function() {
                 $.post('/reset', function() {
                     $('#conversation').empty();
+                });
+            });
+
+            $('.rate-btn').on('click', function() {
+                var rating = $(this).data('rating');
+                $.ajax({
+                    url: '/rate',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({rating: rating}),
+                    success: function(data) {
+                        if (data.status === 'success') {
+                            alert('Thank you for your rating!');
+                        } else {
+                            alert('Error: ' + data.message);
+                        }
+                    },
+                    error: function() {
+                        alert('Error: Unable to submit rating.');
+                    }
                 });
             });
         });
