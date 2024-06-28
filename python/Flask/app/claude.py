@@ -2,8 +2,7 @@ from flask import (
     Flask,
     render_template,
     request,
-    Response,
-    stream_with_context,
+    jsonify,
     session,
 )
 from litellm import completion
@@ -43,28 +42,16 @@ def index():
 
         session["conversation"].append({"role": "user", "content": prompt})
 
-        def generate():
-            yield f"Human: {prompt}\n\n".encode("utf-8")
-            yield f"{selected_llm}: ".encode("utf-8")
-            try:
-                response_content = ""
-                for chunk in completion(
-                    model=selected_llm, messages=session["conversation"], stream=True
-                ):
-                    content = chunk["choices"][0]["delta"].get("content", "")
-                    if content:
-                        response_content += content
-                        yield content.encode("utf-8")
-                session["conversation"].append(
-                    {"role": "assistant", "content": response_content}
-                )
-                session.modified = True
-            except Exception as e:
-                yield str(e).encode("utf-8")
-
-        return Response(
-            stream_with_context(generate()), content_type="text/plain; charset=utf-8"
-        )
+        try:
+            response = completion(model=selected_llm, messages=session["conversation"])
+            response_content = response["choices"][0]["message"]["content"]
+            session["conversation"].append(
+                {"role": "assistant", "content": response_content}
+            )
+            session.modified = True
+            return jsonify({"status": "success", "response": response_content})
+        except Exception as e:
+            return jsonify({"status": "error", "message": str(e)})
 
     return render_template(
         "index.html", llms=LLMS, conversation=session["conversation"]

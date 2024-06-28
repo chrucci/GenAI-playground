@@ -52,25 +52,24 @@
                 e.preventDefault();
                 var prompt = $('#prompt').val();
                 var selectedLLM = $('#llm').val();
-                $('#conversation').append('<span class="human">Human: ' + prompt + '</span>\n\n<span class="ai">' + selectedLLM + ': </span>');
+                $('#conversation').append('<span class="human">Human: ' + prompt + '</span>\n\n');
                 scrollToBottom();
                 $.ajax({
                     url: '/',
                     method: 'POST',
                     data: $(this).serialize(),
-                    xhrFields: {
-                        onprogress: function(e) {
-                            var response = e.currentTarget.response;
-                            var lines = response.split('\n');
-                            lines.shift(); // Remove the "Human: " line
-                            lines.shift(); // Remove the empty line
-                            lines.shift(); // Remove the "LLM: " line
-                            $('#conversation').find('span.ai:last').append(lines.join('\n'));
-                            scrollToBottom();
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.status === 'success') {
+                            $('#conversation').append('<span class="ai">' + selectedLLM + ': ' + data.response + '</span>\n\n');
+                        } else {
+                            $('#conversation').append('<span class="ai">Error: ' + data.message + '</span>\n\n');
                         }
-                    },
-                    complete: function() {
                         $('#prompt').val('');
+                        scrollToBottom();
+                    },
+                    error: function() {
+                        $('#conversation').append('<span class="ai">Error: Unable to get response from server.</span>\n\n');
                         scrollToBottom();
                     }
                 });
