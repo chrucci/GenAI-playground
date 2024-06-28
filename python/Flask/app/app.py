@@ -11,16 +11,19 @@ def home():
 
 @app.route("/hello/<name>")
 def hello_name(name):
-    list = ["foo", "bar", "baz"]
+    list = get_llm_list()
     return render_template("hello.html", name=name, items=list)
 
 
 @app.route("/submit-prompt", methods=["POST"])
 def ajax_call():
     data = request.form.get("message")
+    llm = request.form.get("llm")
     # Process the data and generate a response
     # response = process_data(data)
-    return "THIS IS what you sent: " + data
+    return (
+        "THIS IS what you sent: " + data + " and " + llm + " was the LLM you selected!"
+    )
 
 
 @app.route("/update-items", methods=["GET"])
@@ -32,4 +35,4 @@ def update_items():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, use_reloader=True)
