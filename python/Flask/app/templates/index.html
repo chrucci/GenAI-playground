@@ -1,3 +1,5 @@
+# templates/index.html
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,6 +10,9 @@
         body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
         select, textarea, button { width: 100%; margin-bottom: 10px; }
         #response { border: 1px solid #ddd; padding: 10px; min-height: 100px; white-space: pre-wrap; }
+        #prompt { resize: vertical; }
+        .human { font-weight: bold; }
+        .ai { font-weight: bold; color: #4a4a4a; }
     </style>
 </head>
 <body>
@@ -27,14 +32,21 @@
         $(document).ready(function() {
             $('#llm-form').on('submit', function(e) {
                 e.preventDefault();
-                $('#response').text('');
+                var prompt = $('#prompt').val();
+                var selectedLLM = $('#llm').val();
+                $('#response').html('<span class="human">Human: ' + prompt + '</span>\n\n<span class="ai">' + selectedLLM + ': </span>');
                 $.ajax({
                     url: '/',
                     method: 'POST',
                     data: $(this).serialize(),
                     xhrFields: {
                         onprogress: function(e) {
-                            $('#response').text($('#response').text() + e.currentTarget.response);
+                            var response = e.currentTarget.response;
+                            var lines = response.split('\n');
+                            lines.shift(); // Remove the "Human: " line
+                            lines.shift(); // Remove the empty line
+                            lines.shift(); // Remove the "LLM: " line
+                            $('#response').append(lines.join('\n'));
                         }
                     }
                 });

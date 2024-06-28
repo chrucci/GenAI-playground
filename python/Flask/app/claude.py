@@ -25,6 +25,8 @@ def index():
         prompt = request.form["prompt"]
 
         def generate():
+            yield f"Human: {prompt}\n\n".encode("utf-8")
+            yield f"{selected_llm}: ".encode("utf-8")
             try:
                 for chunk in completion(
                     model=selected_llm,
