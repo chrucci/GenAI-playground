@@ -35,7 +35,6 @@ langfuse = Langfuse(
 LLMS = [
     "gpt-3.5-turbo",
     "gpt-4",
-    "gpt-4-32k",
     "gpt-4o",
     "claude-3-haiku-20240307",
     "claude-3-opus-20240229",
@@ -46,6 +45,16 @@ LLMS = [
     "ollama/mixtral",
     "ollama/llama2",
     "ollama/llama3",
+]
+
+
+# Predefined prompts
+PROMPTS = [
+    {"name": "Extract Wisdom", "value": "Let's have a friendly conversation."},
+    {"name": "Code Explanation", "value": "Explain the following code: "},
+    {"name": "Text Summarization", "value": "Summarize the following text: "},
+    {"name": "Creative Writing", "value": "Write a short story about: "},
+    {"name": "Problem Solving", "value": "How would you solve this problem: "},
 ]
 
 
@@ -62,15 +71,12 @@ def index():
         session["conversation"].append({"role": "user", "content": prompt})
 
         try:
-            # Create or continue the trace
             trace = langfuse.trace(
                 id=session["trace_id"], metadata={"model": selected_llm}
             )
 
-            # Log the user input as an event
             trace.event(name="user_input", input=prompt)
 
-            # Make the LLM call and log it with Langfuse
             generation = trace.generation(
                 name="llm_call",
                 model=selected_llm,
@@ -82,7 +88,6 @@ def index():
             response = completion(model=selected_llm, messages=session["conversation"])
             response_content = response["choices"][0]["message"]["content"]
 
-            # Update the Langfuse generation with the response
             generation.end(
                 output=response_content,
                 completion_tokens=response["usage"]["completion_tokens"],
@@ -97,13 +102,12 @@ def index():
 
             return jsonify({"status": "success", "response": response_content})
         except Exception as e:
-            # Log the error with Langfuse
             trace = langfuse.trace(id=session["trace_id"])
             trace.event(level="ERROR", name="llm_error", input=str(e))
             return jsonify({"status": "error", "message": str(e)})
 
     return render_template(
-        "index.html", llms=LLMS, conversation=session["conversation"]
+        "index.html", llms=LLMS, prompts=PROMPTS, conversation=session["conversation"]
     )
 
 

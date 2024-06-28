@@ -15,38 +15,54 @@
         #reset { background-color: #f44336; color: white; border: none; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; }
         .rating { margin-top: 10px; }
         .rating button { width: auto; margin-right: 5px; }
+        .container { display: flex; }
+        .main-content { flex: 3; padding-right: 20px; }
+        .sidebar { flex: 1; }
     </style>
 </head>
 <body>
     <h1>LiteLLM Interface with Memory and LangFuse</h1>
-    <div id="conversation">
-        {% for message in conversation %}
-            {% if message.role == 'user' %}
+    <div class="container">
+        <div class="main-content">
+            <div id="conversation">
+                {% for message in conversation %}
+                    {% if message.role == 'user' %}
 <span class="human">Human: {{ message.content }}</span>
 
-            {% else %}
+                    {% else %}
 <span class="ai">AI: {{ message.content }}</span>
 
-            {% endif %}
-        {% endfor %}
-    </div>
-    <form id="llm-form">
-        <select name="llm" id="llm">
-            {% for llm in llms %}
-            <option value="{{ llm }}">{{ llm }}</option>
-            {% endfor %}
-        </select>
-        <textarea name="prompt" id="prompt" rows="5" placeholder="Enter your prompt here"></textarea>
-        <button type="submit">Submit</button>
-    </form>
-    <button id="reset">Reset Conversation</button>
-    <div class="rating">
-        <span>Rate the conversation:</span>
-        <button class="rate-btn" data-rating="1">1</button>
-        <button class="rate-btn" data-rating="2">2</button>
-        <button class="rate-btn" data-rating="3">3</button>
-        <button class="rate-btn" data-rating="4">4</button>
-        <button class="rate-btn" data-rating="5">5</button>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <form id="llm-form">
+                <select name="llm" id="llm">
+                    {% for llm in llms %}
+                    <option value="{{ llm }}">{{ llm }}</option>
+                    {% endfor %}
+                </select>
+                <textarea name="prompt" id="prompt" rows="5" placeholder="Enter your prompt here"></textarea>
+                <button type="submit">Submit</button>
+            </form>
+            <button id="reset">Reset Conversation</button>
+            <div class="rating">
+                <span>Rate the conversation:</span>
+                <button class="rate-btn" data-rating="1">1</button>
+                <button class="rate-btn" data-rating="2">2</button>
+                <button class="rate-btn" data-rating="3">3</button>
+                <button class="rate-btn" data-rating="4">4</button>
+                <button class="rate-btn" data-rating="5">5</button>
+            </div>
+        </div>
+        <div class="sidebar">
+            <h3>Predefined Prompts</h3>
+            <select id="predefined-prompts">
+                <option value="">Select a prompt</option>
+                {% for prompt in prompts %}
+                <option value="{{ prompt.value }}">{{ prompt.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
     </div>
 
     <script>
@@ -80,7 +96,8 @@
                     },
                     error: function() {
                         $('#conversation').append('<span class="ai">Error: Unable to get response from server.</span>\n\n');
-                        scrollToBottom();                    }
+                        scrollToBottom();
+                    }
                 });
             });
 
@@ -108,6 +125,13 @@
                         alert('Error: Unable to submit rating.');
                     }
                 });
+            });
+
+            $('#predefined-prompts').on('change', function() {
+                var selectedPrompt = $(this).val();
+                if (selectedPrompt) {
+                    $('#prompt').val(selectedPrompt);
+                }
             });
         });
     </script>
