@@ -1,22 +1,33 @@
-# templates/index.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LiteLLM Interface</title>
+    <title>LiteLLM Interface with Memory</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
         select, textarea, button { width: 100%; margin-bottom: 10px; }
-        #response { border: 1px solid #ddd; padding: 10px; min-height: 100px; white-space: pre-wrap; }
+        #conversation { border: 1px solid #ddd; padding: 10px; min-height: 300px; max-height: 500px; overflow-y: auto; white-space: pre-wrap; margin-bottom: 10px; }
         #prompt { resize: vertical; }
         .human { font-weight: bold; }
         .ai { font-weight: bold; color: #4a4a4a; }
+        #reset { background-color: #f44336; color: white; border: none; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; }
     </style>
 </head>
 <body>
-    <h1>LiteLLM Interface</h1>
+    <h1>LiteLLM Interface with Memory</h1>
+    <div id="conversation">
+        {% for message in conversation %}
+            {% if message.role == 'user' %}
+<span class="human">Human: {{ message.content }}</span>
+
+            {% else %}
+<span class="ai">AI: {{ message.content }}</span>
+
+            {% endif %}
+        {% endfor %}
+    </div>
     <form id="llm-form">
         <select name="llm" id="llm">
             {% for llm in llms %}
@@ -26,15 +37,23 @@
         <textarea name="prompt" id="prompt" rows="5" placeholder="Enter your prompt here"></textarea>
         <button type="submit">Submit</button>
     </form>
-    <div id="response"></div>
+    <button id="reset">Reset Conversation</button>
 
     <script>
         $(document).ready(function() {
+            function scrollToBottom() {
+                var conversation = document.getElementById('conversation');
+                conversation.scrollTop = conversation.scrollHeight;
+            }
+
+            scrollToBottom();
+
             $('#llm-form').on('submit', function(e) {
                 e.preventDefault();
                 var prompt = $('#prompt').val();
                 var selectedLLM = $('#llm').val();
-                $('#response').html('<span class="human">Human: ' + prompt + '</span>\n\n<span class="ai">' + selectedLLM + ': </span>');
+                $('#conversation').append('<span class="human">Human: ' + prompt + '</span>\n\n<span class="ai">' + selectedLLM + ': </span>');
+                scrollToBottom();
                 $.ajax({
                     url: '/',
                     method: 'POST',
@@ -46,9 +65,20 @@
                             lines.shift(); // Remove the "Human: " line
                             lines.shift(); // Remove the empty line
                             lines.shift(); // Remove the "LLM: " line
-                            $('#response').append(lines.join('\n'));
+                            $('#conversation').find('span.ai:last').append(lines.join('\n'));
+                            scrollToBottom();
                         }
+                    },
+                    complete: function() {
+                        $('#prompt').val('');
+                        scrollToBottom();
                     }
+                });
+            });
+
+            $('#reset').on('click', function() {
+                $.post('/reset', function() {
+                    $('#conversation').empty();
                 });
             });
         });
