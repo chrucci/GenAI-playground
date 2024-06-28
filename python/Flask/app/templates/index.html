@@ -1,0 +1,45 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LiteLLM Interface</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        select, textarea, button { width: 100%; margin-bottom: 10px; }
+        #response { border: 1px solid #ddd; padding: 10px; min-height: 100px; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <h1>LiteLLM Interface</h1>
+    <form id="llm-form">
+        <select name="llm" id="llm">
+            {% for llm in llms %}
+            <option value="{{ llm }}">{{ llm }}</option>
+            {% endfor %}
+        </select>
+        <textarea name="prompt" id="prompt" rows="5" placeholder="Enter your prompt here"></textarea>
+        <button type="submit">Submit</button>
+    </form>
+    <div id="response"></div>
+
+    <script>
+        $(document).ready(function() {
+            $('#llm-form').on('submit', function(e) {
+                e.preventDefault();
+                $('#response').text('');
+                $.ajax({
+                    url: '/',
+                    method: 'POST',
+                    data: $(this).serialize(),
+                    xhrFields: {
+                        onprogress: function(e) {
+                            $('#response').text($('#response').text() + e.currentTarget.response);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
