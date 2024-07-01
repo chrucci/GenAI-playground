@@ -68,6 +68,11 @@ def index():
         selected_llm = request.form["llm"]
         prompt = request.form["prompt"]
 
+        # Get model parameters from the form
+        temperature = float(request.form.get("temperature", 0.7))
+        top_p = float(request.form.get("top_p", 1.0))
+        max_tokens = int(request.form.get("max_tokens", 500))
+
         session["conversation"].append({"role": "user", "content": prompt})
 
         try:
@@ -77,15 +82,31 @@ def index():
 
             trace.event(name="user_input", input=prompt)
 
+            base_url = (
+                os.getenv("OLLAMA_BASE_URL")
+                if selected_llm.startswith("ollama")
+                else None
+            )
             generation = trace.generation(
                 name="llm_call",
                 model=selected_llm,
-                model_parameters={"temperature": 0.7},
+                model_parameters={
+                    "temperature": temperature,
+                    "top_p": top_p,
+                    "max_tokens": max_tokens,
+                    "base_url": base_url,
+                },
                 input=session["conversation"],
                 is_streamed=False,
             )
 
-            response = completion(model=selected_llm, messages=session["conversation"])
+            response = completion(
+                model=selected_llm,
+                messages=session["conversation"],
+                temperature=temperature,
+                top_p=top_p,
+                max_tokens=max_tokens,
+            )
             response_content = response["choices"][0]["message"]["content"]
 
             generation.end(

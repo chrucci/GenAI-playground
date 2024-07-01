@@ -1,12 +1,14 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LiteLLM Interface with Memory and LangFuse</title>
+    <title>LiteLLM Interface with Advanced Settings</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; }
         select, textarea, button { width: 100%; margin-bottom: 10px; }
         #conversation { border: 1px solid #ddd; padding: 10px; min-height: 300px; max-height: 500px; overflow-y: auto; white-space: pre-wrap; margin-bottom: 10px; }
         #prompt { resize: vertical; }
@@ -16,12 +18,25 @@
         .rating { margin-top: 10px; }
         .rating button { width: auto; margin-right: 5px; }
         .container { display: flex; }
-        .main-content { flex: 3; padding-right: 20px; }
+        .main-content { flex: 2; padding-right: 20px; }
         .sidebar { flex: 1; }
+        .settings-panel { background-color: #f9f9f9; border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; }
+        .settings-panel h3 { margin-top: 0; }
+        .parameter { display: flex; align-items: center; margin-bottom: 10px; }
+        .parameter label { flex: 1; }
+        .parameter input[type="range"] { flex: 2; }
+        .parameter input[type="number"] { width: 60px; margin-left: 10px; }
+        .parameter-description { font-size: 0.9em; color: #666; margin-top: 5px; }
+        .toggle-switch { position: relative; display: inline-block; width: 60px; height: 34px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #2196F3; }
+        input:checked + .slider:before { transform: translateX(26px); }
     </style>
 </head>
 <body>
-    <h1>LiteLLM Interface with Memory and LangFuse</h1>
+    <h1>LiteLLM Interface with Advanced Settings</h1>
     <div class="container">
         <div class="main-content">
             <div id="conversation">
@@ -55,6 +70,40 @@
             </div>
         </div>
         <div class="sidebar">
+            <div class="settings-panel">
+                <h3>Model Parameters</h3>
+                <p class="parameter-description">These parameters control the generation process of the model, affecting the diversity, randomness, and focus of the output.</p>
+                
+                <div class="parameter">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="temperature-toggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                    <label for="temperature">Temperature</label>
+                    <input type="range" id="temperature" name="temperature" min="0" max="1" step="0.01" value="0.8">
+                    <input type="number" id="temperature-value" value="0.8" min="0" max="1" step="0.01">
+                </div>
+                
+                <div class="parameter">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="top-p-toggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                    <label for="top_p">Top P</label>
+                    <input type="range" id="top_p" name="top_p" min="0" max="1" step="0.01" value="0.95">
+                    <input type="number" id="top-p-value" value="0.95" min="0" max="1" step="0.01">
+                </div>
+                               
+                <div class="parameter">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="max-tokens-toggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                    <label for="max_tokens">Max tokens</label>
+                    <input type="number" id="max_tokens" name="max_tokens" min="1" max="2048" value="500">
+                </div>
+            </div>
+            
             <h3>Predefined Prompts</h3>
             <select id="predefined-prompts">
                 <option value="">Select a prompt</option>
@@ -76,6 +125,13 @@
 
             $('#llm-form').on('submit', function(e) {
                 e.preventDefault();
+                var formData = new FormData(this);
+                
+                // Add model parameters to the form data
+                formData.append('temperature', $('#temperature-toggle').is(':checked') ? $('#temperature').val() : 0.7);
+                formData.append('top_p', $('#top-p-toggle').is(':checked') ? $('#top_p').val() : 1.0);
+                formData.append('max_tokens', $('#max-tokens-toggle').is(':checked') ? $('#max_tokens').val() : 500);
+                
                 var prompt = $('#prompt').val();
                 var selectedLLM = $('#llm').val();
                 $('#conversation').append('<span class="human">Human: ' + prompt + '</span>\n\n');
@@ -83,7 +139,9 @@
                 $.ajax({
                     url: '/',
                     method: 'POST',
-                    data: $(this).serialize(),
+                    data: formData,
+                    processData: false,
+                    contentType: false,
                     dataType: 'json',
                     success: function(data) {
                         if (data.status === 'success') {
@@ -133,7 +191,29 @@
                     $('#prompt').val(selectedPrompt);
                 }
             });
-        });
-    </script>
-</body>
+
+            // Handle parameter toggles
+            $('.toggle-switch input[type="checkbox"]').on('change', function() {
+                var paramId = $(this).attr('id').replace('-toggle', '');
+                $('#' + paramId).prop('disabled', !this.checked);
+                $('#' + paramId + '-value').prop('disabled', !this.checked);
+            });
+
+            // Update number input when range input changes
+            $('input[type="range"]').on('input', function() {
+                $('#' + this.id + '-value').val(this.value);
+            });
+
+            // Update range input when number input changes
+            $('input[type="number"]').on('input', function() {
+                var rangeId = this.id.replace('-value', '');
+                $('#' + rangeId).val(this.value);
+            });
+
+            // Initialize toggle states
+            $('#temperature-toggle, #top-p-toggle, #max-tokens-toggle').trigger('change');
+            $('#top-k-toggle').trigger('change');
+            });
+        </script>
+    </body>
 </html>

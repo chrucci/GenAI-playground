@@ -13,4 +13,4 @@ export FLASK_DEBUG=1
 
 # Run the Flask application
 # flask run --reload
-python app/app.py
+python app/claude.py
