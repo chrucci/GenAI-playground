@@ -24,3 +24,5 @@ jupyter/MultiModalRAG/scratch/*con
 jupyter/MultiModalRAG/scratch/imgs/*
 python/Flask/flask/*
 .aider*
+jupyter/ImprovingAccuracyOfLlmApplications/lamini/*
+lamini/*
