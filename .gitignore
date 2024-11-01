@@ -26,3 +26,4 @@ python/Flask/flask/*
 .aider*
 jupyter/ImprovingAccuracyOfLlmApplications/lamini/*
 lamini/*
+venv/*
