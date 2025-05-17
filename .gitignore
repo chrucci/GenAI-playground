@@ -27,3 +27,4 @@ python/Flask/flask/*
 jupyter/ImprovingAccuracyOfLlmApplications/lamini/*
 lamini/*
 venv/*
+jupyter/MCP/L4/mcp_project/uv.lock
