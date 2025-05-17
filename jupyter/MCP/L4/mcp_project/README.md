@@ -1,4 +1,5 @@
 
+## How to run the MCP Server
 - `cd` into `cd jupyter/MCP/L4/mcp_project/`
   - You should see `research_server.py` which was created in the L4 jupyter notebook.
 - Create virtual env using `uv`
