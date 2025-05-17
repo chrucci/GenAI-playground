@@ -9,3 +9,4 @@
     - `uv add mcp arxiv`
   - run the MCP server
     - `npx @modelcontextprotocol/inspector uv run research_server.py`
+  - Launch the inspector page at `http://localhost:6274/`
