@@ -7,7 +7,6 @@
   - `uv venv`
   - `source .venv/bin/activate`
 - add necessary libraries to venv
-  - `uv add anthropic python-dotenv nest_asyncio mcp`
+  - `uv add anthropic python-dotenv nest_asyncio mcp arxiv`
 - run the MCP chatbot
   - `uv run mcp_chatbot.py`
-- Launch the inspector page at `http://localhost:6274/`
