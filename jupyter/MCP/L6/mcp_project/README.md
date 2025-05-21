@@ -1,0 +1,11 @@
+## How to run the MCP ChatBot
+- `cd` into `cd jupyter/MCP/L6/mcp_project/`
+  - You should see `mcp_chatbot.py` which was created in the L4 jupyter notebook.
+- Create virtual env using `uv`
+  - `uv init`
+  - `uv venv`
+  - `source .venv/bin/activate`
+- add necessary libraries to venv
+  - `uv add anthropic python-dotenv nest_asyncio mcp arxiv`
+- run the MCP chatbot
+  - `uv run mcp_chatbot.py`
