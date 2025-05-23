@@ -29,3 +29,4 @@ lamini/*
 venv/*
 **/uv.lock
 **/papers_info.json
+jupyter/MCP/L6/mcp_project/.python-version
