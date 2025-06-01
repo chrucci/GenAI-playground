@@ -38,41 +38,53 @@ class MCP_ChatBot:
             try:
                 # List available tools
                 response = await session.list_tools()
-                for tool in response.tools:
-                    self.sessions[tool.name] = session
-                    self.available_tools.append(
-                        {
-                            "name": tool.name,
-                            "description": tool.description,
-                            "input_schema": tool.inputSchema,
-                        }
-                    )
+                self._process_tools(session, response)
 
                 # List available prompts
                 prompts_response = await session.list_prompts()
-                if prompts_response and prompts_response.prompts:
-                    for prompt in prompts_response.prompts:
-                        self.sessions[prompt.name] = session
-                        self.available_prompts.append(
-                            {
-                                "name": prompt.name,
-                                "description": prompt.description,
-                                "arguments": prompt.arguments,
-                            }
-                        )
+                self._process_prompts(session, prompts_response)
 
                 # List available resources
                 resources_response = await session.list_resources()
-                if resources_response and resources_response.resources:
-                    for resource in resources_response.resources:
-                        resource_uri = str(resource.uri)
-                        self.sessions[resource_uri] = session
+                self._process_resources(session, resources_response)
 
             except Exception as e:
                 print(f"Error {e}")
 
         except Exception as e:
             print(f"Error connecting to {server_name}: {e}")
+
+    def _process_tools(self, session, response):
+        """Process and register tools from the MCP server response."""
+        for tool in response.tools:
+            self.sessions[tool.name] = session
+            self.available_tools.append(
+                {
+                    "name": tool.name,
+                    "description": tool.description,
+                    "input_schema": tool.inputSchema,
+                }
+            )
+
+    def _process_prompts(self, session, prompts_response):
+        """Process and register prompts from the MCP server response."""
+        if prompts_response and prompts_response.prompts:
+            for prompt in prompts_response.prompts:
+                self.sessions[prompt.name] = session
+                self.available_prompts.append(
+                    {
+                        "name": prompt.name,
+                        "description": prompt.description,
+                        "arguments": prompt.arguments,
+                    }
+                )
+
+    def _process_resources(self, session, resources_response):
+        """Process and register resources from the MCP server response."""
+        if resources_response and resources_response.resources:
+            for resource in resources_response.resources:
+                resource_uri = str(resource.uri)
+                self.sessions[resource_uri] = session
 
     async def connect_to_servers(self):
         try:
